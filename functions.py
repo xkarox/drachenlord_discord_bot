@@ -1,8 +1,20 @@
 # functions.py --
 
+import os
+import configparser
 import requests
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 import re
+from pandas import DataFrame
+
+def update_steam_games():
+    #updatet die steam spiele liste
+    #http://api.steampowered.com/ISteamApps/GetAppList/v0002/
+
+def get_app_id():
+    #pandas dataframe
+    # oder pack die scheisse in eine datenbank
 
 def get_stats():
     r = requests.get('https://drachenchronik.com/')
@@ -33,6 +45,8 @@ def get_stats():
     return month_Date, month_Video, month_Streams, month_Money, day_Date, day_Video, day_Streams, day_Money
 
 def get_images():
+    load_dotenv()
+    STEAM_URL = os.getenv('DISCORD_STEAM_URL')
     r = requests.get('https://drachenchronik.com/image/search?t=2')
     soup = BeautifulSoup(r.content, 'html.parser')
 
@@ -41,12 +55,26 @@ def get_images():
     print(x)
 
 def get_steam_status():
-    r = requests.get('https://steamcommunity.com/id/DrachenLord1510')
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    STEAM_URL = config.get('Links', 'steam_url_drachenlord')
+    r = requests.get(STEAM_URL)
     soup = BeautifulSoup(r.content, 'html.parser')
     profile_in_game_header = soup.select_one('.profile_in_game_header').text.strip()
+
+    return profile_in_game_header
+
+def get_current_steam_game():
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    STEAM_URL = config.get('Links', 'steam_url_drachenlord')
+    r = requests.get(STEAM_URL)
+    soup = BeautifulSoup(r.content, 'html.parser')
+
     profile_in_game_name = soup.select_one('.profile_in_game_name').text.strip()
 
-    return profile_in_game_header, profile_in_game_name
+    return profile_in_game_name
+
 
 if __name__ == '__main__':
     get_steam_status()
