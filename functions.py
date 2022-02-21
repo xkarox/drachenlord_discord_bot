@@ -15,6 +15,8 @@ def update_steam_games():
 def get_app_id():
     #pandas dataframe
     # oder pack die scheisse in eine datenbank
+    #oder pandas dataframe -> array
+    #steam api -> steam spiele eines users mit zuätzlichen infos
 
 def get_stats():
     r = requests.get('https://drachenchronik.com/')
