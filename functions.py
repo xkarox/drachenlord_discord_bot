@@ -32,5 +32,21 @@ def get_stats():
 
     return month_Date, month_Video, month_Streams, month_Money, day_Date, day_Video, day_Streams, day_Money
 
+def get_images():
+    r = requests.get('https://drachenchronik.com/image/search?t=2')
+    soup = BeautifulSoup(r.content, 'html.parser')
+
+    x = soup.select('img')
+
+    print(x)
+
+def get_steam_status():
+    r = requests.get('https://steamcommunity.com/id/DrachenLord1510')
+    soup = BeautifulSoup(r.content, 'html.parser')
+    profile_in_game_header = soup.select_one('.profile_in_game_header').text.strip()
+    profile_in_game_name = soup.select_one('.profile_in_game_name').text.strip()
+
+    return profile_in_game_header, profile_in_game_name
+
 if __name__ == '__main__':
-    get_revenue()
+    get_steam_status()
