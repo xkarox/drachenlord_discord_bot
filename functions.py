@@ -9,10 +9,12 @@ import re
 from pandas import DataFrame
 
 def update_steam_games():
+    pass
     #updatet die steam spiele liste
     #http://api.steampowered.com/ISteamApps/GetAppList/v0002/
 
 def get_app_id():
+    pass
     #pandas dataframe
     # oder pack die scheisse in eine datenbank
     #oder pandas dataframe -> array
