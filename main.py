@@ -103,7 +103,9 @@ def main():
             await message.channel.send(embed=embed)
 
         if message.content.startswith('/hello'):
-            await  message.channel.send('Ich bin ned der Drache ferdammde aggsd!!!111!11!')
+            embed = discord.Embed(title='Der Dreger in seiner vollen Pracht')
+            embed.set_image(url='https://images.nordbayern.de/image/contentid/policy:1.11466966:1634893479/image/e-arc-tmp-20211022_094643-3.jpg?f=16%3A9&h=816&m=FIT&w=1680&$p$f$h$m$w=a34c85d')
+            await  message.channel.send(embed=embed)
 
     @tasks.loop(seconds=31.0)
     async def get_latest_stats():
