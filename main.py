@@ -82,6 +82,7 @@ def main():
             if re.match("/steam .*",message.content):
                 m = re.search('(/steam) (.*)', message.content)
                 STEAM_URL = m.group(2)
+                print(STEAM_URL)
             else:
                 STEAM_URL = config.get('Links', 'steam_url_drachenlord')
 
@@ -160,10 +161,9 @@ def main():
 
         if old_steam_status[0] != profile_in_game_header:
             if profile_in_game_header == 'Currently In-Game':
-                profile_in_game_name = get_current_steam_game()
-                game_image = __get_game_image()
+                profile_in_game_name, game_image_url = get_current_game_name_and_image_url()
                 embed = discord.Embed(title=f'{profile_in_game_header}', url=STEAM_URL, description=f'{profile_in_game_name}')
-                embed.set_image(game_image)
+                embed.set_image(url=game_image_url)
                 old_steam_status[0] = profile_in_game_header
                 old_steam_status[1] = profile_in_game_name
                 channel = client.get_channel(946460819263197194)
