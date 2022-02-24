@@ -7,18 +7,8 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import re
 from pandas import DataFrame
+from googleapiclient.discovery import build
 
-def update_steam_games():
-    pass
-    #updatet die steam spiele liste
-    #http://api.steampowered.com/ISteamApps/GetAppList/v0002/
-
-def get_app_id():
-    pass
-    #pandas dataframe
-    # oder pack die scheisse in eine datenbank
-    #oder pandas dataframe -> array
-    #steam api -> steam spiele eines users mit zuätzlichen infos
 
 def get_stats():
     r = requests.get('https://drachenchronik.com/')
@@ -79,6 +69,23 @@ def get_current_steam_game():
 
     return profile_in_game_name
 
+def get_youtube_livestream():
+    load_dotenv()
+    api_key = os.getenv('YOUTUBE_API_KEY')
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    livestream_channel_id = config.get('Other', 'livestream_channel_id')
 
+    with build('youtube', 'v3', developerKey = api_key) as youtube:
+        request = youtube.search().list(part = 'snippet',
+                channelId = livestream_channel_id,
+                type = 'video',
+                eventType = 'live',
+                maxResults = 1
+                )
+
+        response = request.execute()
+        return response
+        #print(response['items'][0]['snippet']['title'])
 if __name__ == '__main__':
-    get_steam_status()
+    get_youtube_livestream()
