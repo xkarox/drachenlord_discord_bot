@@ -47,9 +47,7 @@ def __get_appid_and_img_url(name):
                 appid = items['appid']
                 img_url = items['img_logo_url']
                 return appid, img_url
-    # Reloads Json because Game is missing
-    __save_games_to_json()
-    __get_appid_and_img_url(name)
+
 
 
 def __get_game_image_url(name):
