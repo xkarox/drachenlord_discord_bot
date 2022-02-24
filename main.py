@@ -123,7 +123,7 @@ def main():
             embed = discord.Embed(title=f'{m_Date}', url='https://drachenchronik.com/', description=f'''
             {m_Video}
             {m_Streams}
-            {m_Streams}
+            {m_Money}
             ''', color=discord.Color.blue())
 
             embed2 = discord.Embed(title=f'{d_Date}', url='https://drachenchronik.com/', description=f'''
