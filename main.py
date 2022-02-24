@@ -1,8 +1,10 @@
 import os
+import re
+
 import discord
 import logging
 import configparser
-from steam_checker import __get_game_image
+from steam_checker import get_current_game_name_and_image_url
 from dotenv import load_dotenv
 from functions import get_stats, get_steam_status, get_current_steam_game, get_youtube_livestream
 from discord.ext import commands, tasks
@@ -77,13 +79,18 @@ def main():
 
         if message.content.startswith('/steam'):
             profile_in_game_header = get_steam_status()
-            STEAM_URL = config.get('Links', 'steam_url_drachenlord')
+            if re.match("/steam .*",message.content):
+                m = re.search('(/steam) (.*)', message.content)
+                STEAM_URL = m.group(2)
+            else:
+                STEAM_URL = config.get('Links', 'steam_url_drachenlord')
 
             if profile_in_game_header == 'Currently In-Game':
-                profile_in_game_name = get_current_steam_game()
+                profile_in_game_name, game_image_url = get_current_game_name_and_image_url(STEAM_URL)
                 old_steam_status[0] = profile_in_game_name
                 old_steam_status[1] = profile_in_game_header
                 embed = discord.Embed(title=f'{profile_in_game_header}', url=STEAM_URL, description=f'{profile_in_game_name}')
+                embed.set_image(url=game_image_url)
                 await message.channel.send(embed=embed)
 
 

@@ -1,8 +1,6 @@
 import os
 
 from functions import get_current_steam_game, get_steam_status
-import configparser
-from io import BytesIO
 
 import requests
 import json
@@ -22,12 +20,10 @@ def __get_lib():
 
 
 def __get_owned_games(steamid, get_drache):
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-    key = config.get('Keys', 'steam_api_key')
+    key = os.getenv('STEAM_API_KEY')
 
     if get_drache:
-        steamid = config.get('Links', 'steam_id_drache')
+        steamid = os.getenv('STEAM_ID_DRACHE')
 
     payload = {'key': key, 'steamid': steamid, 'include_appinfo': 'true'}
     r = requests.get('https://api.steampowered.com/IPlayerService/GetOwnedGames/v1', params=payload)
