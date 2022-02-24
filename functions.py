@@ -54,6 +54,7 @@ def get_steam_status(*args):
         STEAM_URL = config.get('Links', 'steam_url_drachenlord')
     else:
         STEAM_URL = args[0]
+        print(STEAM_URL)
     r = requests.get(STEAM_URL)
     soup = BeautifulSoup(r.content, 'html.parser')
     profile_in_game_header = soup.select_one('.profile_in_game_header').text.strip()

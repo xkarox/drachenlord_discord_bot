@@ -78,12 +78,14 @@ def main():
             check_current_steam_status.start()
 
         if message.content.startswith('/steam'):
-            profile_in_game_header = get_steam_status()
+
             if re.match("/steam .*",message.content):
                 m = re.search('(/steam) (.*)', message.content)
                 STEAM_URL = m.group(2)
             else:
                 STEAM_URL = config.get('Links', 'steam_url_drachenlord')
+
+            profile_in_game_header = get_steam_status(STEAM_URL)
 
             if profile_in_game_header == 'Currently In-Game':
                 profile_in_game_name, game_image_url = get_current_game_name_and_image_url(STEAM_URL)
@@ -157,7 +159,7 @@ def main():
 
         STEAM_URL = config.get('Links', 'steam_url_drachenlord')
 
-
+        
         if old_steam_status[0] != profile_in_game_header:
             if profile_in_game_header == 'Currently In-Game':
                 profile_in_game_name = get_current_steam_game()
