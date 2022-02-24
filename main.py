@@ -2,8 +2,9 @@ import os
 import discord
 import logging
 import configparser
+from steam_checker import __get_game_image
 from dotenv import load_dotenv
-from functions import get_stats, get_steam_status, get_current_steam_game
+from functions import get_stats, get_steam_status, get_current_steam_game, get_youtube_livestream
 from discord.ext import commands, tasks
 from datetime import time, timedelta, datetime
 from pandas import DataFrame
@@ -29,7 +30,7 @@ def main():
     config = configparser.ConfigParser()
     config.read('config.ini')
 
-    text_channel_list = []
+
 
 
 
@@ -40,14 +41,13 @@ def main():
     async def on_ready():
         # Setting `Playing ` status
         await client.change_presence(activity=discord.Game(name="am Lümmelmann rum"))
+
+        channel = client.get_channel(946460819263197194)
+
         time = datetime.now().strftime('%H:%M:%S')
+
         print(f'[{time}]: {client.user} has connected to the Discord!')
 
-        #gets a list of all text channels
-        for guild in client.guilds:
-            for channel in guild.text_channels:
-                text_channel_list.append(channel)
-        #print (text_channel_list)
 
     @client.event
     async def on_message(message):
@@ -73,7 +73,7 @@ def main():
             await message.channel.send(embed=embed2)
 
         if message.content.startswith('/start'):
-            get_current_steam_status.start()
+            check_current_steam_status.start()
 
         if message.content.startswith('/steam'):
             profile_in_game_header = get_steam_status()
@@ -92,6 +92,11 @@ def main():
                 embed = discord.Embed(title=f'{profile_in_game_header}', url=STEAM_URL, description=f'Der Dicke ist grad offline auf Steam')
                 await message.channel.send(embed=embed)
 
+            elif profile_in_game_header == 'Currently Online':
+                old_steam_status[1] = profile_in_game_header
+                embed = discord.Embed(title=f'{profile_in_game_header}', url=STEAM_URL, description=f'Der Dicke ist grad online auf Steam')
+                await message.channel.send(embed=embed)
+
             else:
                 old_steam_status[1] = profile_in_game_header
                 embed = discord.Embed(title=f'{profile_in_game_header}', url=STEAM_URL, description=f'')
@@ -107,31 +112,34 @@ def main():
             embed.set_image(url='https://images.nordbayern.de/image/contentid/policy:1.11466966:1634893479/image/e-arc-tmp-20211022_094643-3.jpg?f=16%3A9&h=816&m=FIT&w=1680&$p$f$h$m$w=a34c85d')
             await  message.channel.send(embed=embed)
 
-    @tasks.loop(seconds=31.0)
-    async def get_latest_stats():
+    @tasks.loop(seconds=31)
+    async def check_latest_stats():
         now = datetime.now()
         statsHour = config.get('DrachenStats', 'Hour')
         statsMin = config.get('DrachenStats', 'Minute')
         if now.hour == int(statsHour) and now.minute == int(statsMin):
             m_Date, m_Video, m_Streams, m_Money, d_Date, d_Video, d_Streams, d_Money = get_stats()
+
             embed = discord.Embed(title=f'{m_Date}', url='https://drachenchronik.com/', description=f'''
             {m_Video}
             {m_Streams}
             {m_Streams}
             ''', color=discord.Color.blue())
+
             embed2 = discord.Embed(title=f'{d_Date}', url='https://drachenchronik.com/', description=f'''
             {d_Video}
             {d_Streams}
             {d_Money}
             ''', color=discord.Color.blue())
-            await message.channel.send(embed=embed)
-            await message.channel.send(embed=embed2)
+
+            channel = client.get_channel(946460819263197194)
+            await channel.send(embed=embed)
+            await channel.send(embed=embed2)
 
 
     old_steam_status = ['placeholder', 'placeholder2']
     @tasks.loop(seconds=10.0)
-    async def get_current_steam_status():
-        print(f'test: {current_time}')
+    async def check_current_steam_status():
 
         profile_in_game_header = get_steam_status()
 
@@ -142,27 +150,57 @@ def main():
 
         STEAM_URL = config.get('Links', 'steam_url_drachenlord')
 
-        channel = client.get_channel(943988010410709032)
 
         if old_steam_status[0] != profile_in_game_header:
             if profile_in_game_header == 'Currently In-Game':
                 profile_in_game_name = get_current_steam_game()
+                game_image = __get_game_image()
                 embed = discord.Embed(title=f'{profile_in_game_header}', url=STEAM_URL, description=f'{profile_in_game_name}')
+                embed.set_image(game_image)
                 old_steam_status[0] = profile_in_game_header
                 old_steam_status[1] = profile_in_game_name
+                channel = client.get_channel(946460819263197194)
                 await channel.send(embed=embed)
 
             elif profile_in_game_header == 'Currently Offline':
                 embed = discord.Embed(title=f'{profile_in_game_header}', url=STEAM_URL, description=f'Der Dicke ist grad offline auf Steam')
                 old_steam_status[0] = profile_in_game_header
+                channel = client.get_channel(946460819263197194)
                 await channel.send(embed=embed)
 
             else:
                 embed = discord.Embed(title=f'{profile_in_game_header}', url=STEAM_URL, description=f'Der Dicke ist grad online auf Steam')
                 old_steam_status[0] = profile_in_game_header
+                channel = client.get_channel(946460819263197194)
                 await channel.send(embed=embed)
 
-    get_latest_stats.start()
+
+    #checks every 15 minutes if a specified youtube account started a livestream
+    #and sends a message with the livestream link
+    @tasks.loop(minutes=15)
+    async def check_livestream_status():
+        livestream = get_youtube_livestream()
+        livestream_id = livestream['items'][0]['id']['videoId']
+        livestream_title = livestream['items'][0]['snippet']['title']
+
+        with open('livestream_id.txt', 'w') as f:
+
+            old_livestream_id = f.read
+            print(old_livestream_id)
+            if livestream_id != old_livestream_id:
+                embed = discord.Embed(title = livestream_title, description = f'https://www.youtube.com/watch?v={livestream_id}')
+
+
+                #Note {Adrian} wieso zum fick geht diese scheisse in jeder anderen funktion aber hier nicht
+                channel = client.get_channel(946460819263197194)
+                #await channel.send(embed=embed)
+                await channel.send(f'https://www.youtube.com/watch?v={livestream_id}')
+            else:
+                print(livestream)
+
+
+    #check_livestream_status.start()
+    check_latest_stats.start()
     client.run(TOKEN)
 
 if __name__ == '__main__':
