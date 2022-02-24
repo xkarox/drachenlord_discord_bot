@@ -1,5 +1,4 @@
 # functions.py --
-
 import os
 import configparser
 import requests
@@ -48,10 +47,13 @@ def get_images():
 
     print(x)
 
-def get_steam_status():
+def get_steam_status(*args):
     config = configparser.ConfigParser()
     config.read('config.ini')
-    STEAM_URL = config.get('Links', 'steam_url_drachenlord')
+    if not args:
+        STEAM_URL = config.get('Links', 'steam_url_drachenlord')
+    else:
+        STEAM_URL = args[0]
     r = requests.get(STEAM_URL)
     soup = BeautifulSoup(r.content, 'html.parser')
     profile_in_game_header = soup.select_one('.profile_in_game_header').text.strip()

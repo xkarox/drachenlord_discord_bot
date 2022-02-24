@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 lib = 'drache_lib.json'
 
-__all__ = ['get_number_of_games_owned', 'get_current_game_name_and_image']
+__all__ = ['get_number_of_games_owned', 'get_current_game_name_and_image_url']
 
 
 def __get_lib():
@@ -56,21 +56,19 @@ def __get_appid_and_img_url(name):
     __get_appid_and_img_url(name)
 
 
-def __get_game_image(name):
+def __get_game_image_url(name):
     appid, image_url = __get_appid_and_img_url(name)
-    response = requests.get(
-        "https://media.steampowered.com/steamcommunity/public/images/apps/{}/{}.jpg".format(appid, image_url))
-    return Image.open(BytesIO(response.content))
+    return "https://media.steampowered.com/steamcommunity/public/images/apps/{}/{}.jpg".format(appid, image_url)
 
 
-def get_current_game_name_and_image():
+def get_current_game_name_and_image_url(*args):
     # Returns the name and Image of Drachenlords current steam game
     __get_lib()
-    steam_status = get_steam_status()
+    steam_status = get_steam_status(args)
     if steam_status == "Currently In-Game":
         game_name = get_current_steam_game()
         print("Drache ist Ingame")
-        game_img = __get_game_image(game_name)
+        game_img = __get_game_image_url(game_name)
         return game_name, game_img
     else:
         print("Drache ist nicht Ingame")
@@ -90,7 +88,7 @@ def example_cookie():
     # request = get_owned_games('0', True)
     # save_request_to_json(request)
     # dataFrame = save_request_to_dataframe(request)
-    name, img = get_current_game_name_and_image()
+    name, img = get_current_game_name_and_image_url()
     print(name)
     print(get_number_of_games_owned())
     plt.imshow(img)
