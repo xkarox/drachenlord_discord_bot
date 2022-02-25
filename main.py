@@ -153,10 +153,10 @@ def main():
 
         profile_in_game_header = get_steam_status()
 
-        try:
-            profile_in_game_name = get_current_steam_game()
-        except:
-            pass
+        # try:
+        #     profile_in_game_name = get_current_steam_game()
+        # except:
+        #     pass
 
         STEAM_URL = config.get('Links', 'steam_url_drachenlord')
 

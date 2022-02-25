@@ -50,7 +50,7 @@ def get_images():
 def get_steam_status(*args):
     config = configparser.ConfigParser()
     config.read('config.ini')
-    if not args:
+    if len(args) == 0:
         STEAM_URL = config.get('Links', 'steam_url_drachenlord')
     else:
         STEAM_URL = args[0]

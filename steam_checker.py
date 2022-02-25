@@ -49,16 +49,18 @@ def __get_appid_and_img_url(name):
                 return appid, img_url
 
 
-
 def __get_game_image_url(name):
     appid, image_url = __get_appid_and_img_url(name)
-    return "https://media.steampowered.com/steamcommunity/public/images/apps/{}/{}.jpg".format(appid, image_url)
+    return f"https://media.steampowered.com/steamcommunity/public/images/apps/{appid}/{image_url}.jpg"
 
 
 def get_current_game_name_and_image_url(*args):
     # Returns the name and Image of Drachenlords current steam game
     __get_lib()
-    steam_status = get_steam_status(args)
+    if len(args) == 0:
+        steam_status = get_steam_status()
+    else:
+        steam_status = get_steam_status(args[0])
     if steam_status == "Currently In-Game":
         game_name = get_current_steam_game()
         print("Drache ist Ingame")
