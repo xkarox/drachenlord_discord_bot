@@ -52,7 +52,7 @@ def __get_appid_and_img_url(name):
 
 def __get_game_image_url(name):
     appid, image_url = __get_appid_and_img_url(name)
-    return "https://media.steampowered.com/steamcommunity/public/images/apps/{}/{}.jpg".format(appid, image_url)
+    return f"https://media.steampowered.com/steamcommunity/public/images/apps/{appid}/{image_url}.jpg"
 
 
 def get_current_game_name_and_image_url(*args):
